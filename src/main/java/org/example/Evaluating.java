@@ -6,12 +6,27 @@ import java.util.Stack;
 
 public class Evaluating {
     private final Map<String, Integer> variables = new HashMap<>();
+    ForLoopHandler forLoopHandler = new ForLoopHandler();
     public void eval(String code) {
-        for (String line : code.split("\n")) {
-            line = line.trim();
-            if (line.isEmpty()) continue;
-            if (line.contains("=")) handleAssignment(line);
-            if (line.contains("print")) handlePrint(line);
+        String[] lines = code.split("\n");
+        int currentLineIndex = 0;
+
+        while (currentLineIndex < lines.length) {
+            String line = lines[currentLineIndex].trim();
+            if (line.isEmpty()) {
+                currentLineIndex++;
+                continue;
+            }
+
+            if (line.contains("=")) {
+                handleAssignment(line);
+            } else if (line.startsWith("for")) {
+                currentLineIndex = forLoopHandler.handleForLoop(lines, currentLineIndex, variables, this);
+            } else if (line.contains("print")) {
+                handlePrint(line);
+            }
+
+            currentLineIndex++;
         }
     }
 
@@ -65,6 +80,22 @@ public class Evaluating {
             case '/' -> a / b;
             default -> 0;
         };
+    }
+
+    private int applyOpeartorV2(char operator, int a, int b) {
+        int result = 0;
+
+        if(operator == '+') result = a + b;
+        else if(operator == '-') result = a - b;
+        else if(operator == '*') result = a * b;
+        else if(operator == '/') {
+            if(b == 0){
+                System.out.println("Division by zero  detected nigger");
+            }
+            result = a / b;
+        }
+
+        return result;
     }
 
     public void handlePrint(String line) {
