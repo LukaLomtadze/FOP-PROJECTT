@@ -9,12 +9,11 @@ public class Main {
 
         // Python-like code for summing the first N natural numbers using range
         String code = """
-                x = 1
-                y = 50
+                x = 5
                 
-                for i in range(1, y):
-                    x = x + i
-                print(x)
+                while x > 0:
+                    print(x)
+                    x = x - 1
                 """;
 
         evaluating.eval(code);
