@@ -7,6 +7,8 @@ import java.util.Stack;
 public class Evaluating {
     private final Map<String, Integer> variables = new HashMap<>();
     ForLoopHandler forLoopHandler = new ForLoopHandler();
+    WhileLoopHandler whileLoopHandler = new WhileLoopHandler();
+
     public void eval(String code) {
         String[] lines = code.split("\n");
         int currentLineIndex = 0;
@@ -22,6 +24,8 @@ public class Evaluating {
                 handleAssignment(line);
             } else if (line.startsWith("for")) {
                 currentLineIndex = forLoopHandler.handleForLoop(lines, currentLineIndex, variables, this);
+            } else if (line.startsWith("while")) {
+                currentLineIndex = whileLoopHandler.handleWhileLoop(lines, currentLineIndex, variables, this);
             } else if (line.contains("print")) {
                 handlePrint(line);
             }
@@ -36,6 +40,23 @@ public class Evaluating {
     }
 
     public int evaluateExpression(String expression) {
+        expression = expression.trim();
+
+
+        if (expression.matches("\\d+")) {
+            return Integer.parseInt(expression);
+        }
+
+        if (expression.matches("[a-zA-Z]+")) {
+            return variables.getOrDefault(expression, 0);
+        }
+
+        // Handle comparison expressions
+        if (expression.contains(">") || expression.contains("<") || expression.contains("==") || expression.contains("!=")) {
+            return evaluateComparisonExpression(expression);
+        }
+
+        // Handle arithmetic expressions (without comparison)
         Stack<Integer> values = new Stack<>();
         Stack<Character> operators = new Stack<>();
         String[] tokens = expression.split("(?<=\\d)(?=[+-/*])|(?<=[+-/*])(?=\\d)|\\s+");
@@ -54,11 +75,35 @@ public class Evaluating {
             }
         }
 
-
         while (!operators.isEmpty()) {
             values.push(applyOperator(operators.pop(), values.pop(), values.pop()));
         }
         return values.pop();
+    }
+
+    // New method to handle comparison operators
+    private int evaluateComparisonExpression(String expression) {
+        String[] parts = expression.split("\\s+");
+        if (parts.length != 3) {
+            throw new IllegalArgumentException("Invalid comparison expression: " + expression);
+        }
+
+        int left = evaluateExpression(parts[0]);
+        int right = evaluateExpression(parts[2]);
+        String operator = parts[1];
+
+        switch (operator) {
+            case ">":
+                return left > right ? 1 : 0;
+            case "<":
+                return left < right ? 1 : 0;
+            case "==":
+                return left == right ? 1 : 0;
+            case "!=":
+                return left != right ? 1 : 0;
+            default:
+                throw new IllegalArgumentException("Unknown comparison operator: " + operator);
+        }
     }
 
     private int precedence(char operator) {
@@ -77,22 +122,6 @@ public class Evaluating {
             case '/' -> a / b;
             default -> 0;
         };
-    }
-
-    private int applyOpeartorV2(char operator, int a, int b) {
-        int result = 0;
-
-        if(operator == '+') result = a + b;
-        else if(operator == '-') result = a - b;
-        else if(operator == '*') result = a * b;
-        else if(operator == '/') {
-            if(b == 0){
-                System.out.println("Division by zero  detected nigger");
-            }
-            result = a / b;
-        }
-
-        return result;
     }
 
     public void handlePrint(String line) {

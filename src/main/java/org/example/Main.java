@@ -10,13 +10,7 @@ public class Main {
 
         // Your code goes inside """        """
         String code = """
-                x = 6
-                y = 1
-                
-                for ucha in range(1, x):
-                    y = y + ucha
-                    print(y)
-                
+                    
                 """;
 
         evaluating.eval(code);
