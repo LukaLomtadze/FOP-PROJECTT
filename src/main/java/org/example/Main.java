@@ -12,10 +12,11 @@ public class Main {
         String code = """
                 x = 6
                 y = 1
-                for i in range(1, x):
-                    y = y * i
-                    
-                print(y)
+                
+                for ucha in range(1, x):
+                    y = y + ucha
+                    print(y)
+                
                 """;
 
         evaluating.eval(code);
