@@ -38,8 +38,6 @@ public class Evaluating {
     public int evaluateExpression(String expression) {
         Stack<Integer> values = new Stack<>();
         Stack<Character> operators = new Stack<>();
-
-
         String[] tokens = expression.split("(?<=\\d)(?=[+-/*])|(?<=[+-/*])(?=\\d)|\\s+");
 
         for (String token : tokens) {
@@ -60,7 +58,6 @@ public class Evaluating {
         while (!operators.isEmpty()) {
             values.push(applyOperator(operators.pop(), values.pop(), values.pop()));
         }
-
         return values.pop();
     }
 
