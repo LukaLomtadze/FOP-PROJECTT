@@ -10,15 +10,9 @@ public class Main {
 
         // Your code goes inside """        """
         String code = """
-                x = 5
-                y= 1
-               \s
-                while x > 1:
-                    y = y * x
-                    x = x - 1
-                   \s
-                print(y)
-               \s""";
+               
+               
+               """;
 
         evaluating.eval(code);
     }
