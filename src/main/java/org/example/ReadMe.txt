@@ -77,3 +77,12 @@ for i in range(1, n):
     result = result * i
 
 print(result) // 120
+
+x = 5
+y = 1
+
+while x > 1:
+    y = y * x
+    x = x - 1
+print(y) // 120
+
