@@ -8,6 +8,7 @@ public class Evaluating {
     private final Map<String, Integer> variables = new HashMap<>();
     ForLoopHandler forLoopHandler = new ForLoopHandler();
     WhileLoopHandler whileLoopHandler = new WhileLoopHandler();
+    IfElseHandler ifElseHandler = new IfElseHandler();
 
     public void eval(String code) {
         String[] lines = code.split("\n");
@@ -22,17 +23,25 @@ public class Evaluating {
 
             if (line.contains("=")) {
                 handleAssignment(line);
+                currentLineIndex++;
             } else if (line.startsWith("for")) {
                 currentLineIndex = forLoopHandler.handleForLoop(lines, currentLineIndex, variables, this);
             } else if (line.startsWith("while")) {
                 currentLineIndex = whileLoopHandler.handleWhileLoop(lines, currentLineIndex, variables, this);
+            } else if (line.startsWith("if") || line.startsWith("elif") || line.startsWith("else")) {
+                currentLineIndex = ifElseHandler.handleIfElse(lines, currentLineIndex, variables, this);
             } else if (line.contains("print")) {
                 handlePrint(line);
+                currentLineIndex++;
+            } else {
+                currentLineIndex++;
             }
-
-            currentLineIndex++;
         }
     }
+
+
+
+
 
     public void handleAssignment(String line) {
         String[] parts = line.split("=");
@@ -42,21 +51,21 @@ public class Evaluating {
     public int evaluateExpression(String expression) {
         expression = expression.trim();
 
-
         if (expression.matches("\\d+")) {
             return Integer.parseInt(expression);
         }
+
 
         if (expression.matches("[a-zA-Z]+")) {
             return variables.getOrDefault(expression, 0);
         }
 
-        // Handle comparison expressions
+
         if (expression.contains(">") || expression.contains("<") || expression.contains("==") || expression.contains("!=")) {
             return evaluateComparisonExpression(expression);
         }
 
-        // Handle arithmetic expressions (without comparison)
+        // Handle arithmetic expressions (addition, subtraction, etc.)
         Stack<Integer> values = new Stack<>();
         Stack<Character> operators = new Stack<>();
         String[] tokens = expression.split("(?<=\\d)(?=[+-/*])|(?<=[+-/*])(?=\\d)|\\s+");
@@ -81,7 +90,7 @@ public class Evaluating {
         return values.pop();
     }
 
-    // New method to handle comparison operators
+
     private int evaluateComparisonExpression(String expression) {
         String[] parts = expression.split("\\s+");
         if (parts.length != 3) {
@@ -91,6 +100,7 @@ public class Evaluating {
         int left = evaluateExpression(parts[0]);
         int right = evaluateExpression(parts[2]);
         String operator = parts[1];
+
 
         switch (operator) {
             case ">":
@@ -106,6 +116,10 @@ public class Evaluating {
         }
     }
 
+
+
+
+
     private int precedence(char operator) {
         return switch (operator) {
             case '+', '-' -> 1;
@@ -120,9 +134,11 @@ public class Evaluating {
             case '-' -> a - b;
             case '*' -> a * b;
             case '/' -> a / b;
+            case '%' -> a % b; // Handle modulo
             default -> 0;
         };
     }
+
 
     public void handlePrint(String line) {
         String varName = line.substring(line.indexOf("(") + 1, line.indexOf(")")).trim();
