@@ -25,7 +25,7 @@ public class Evaluating {
             } else if (line.startsWith("for")) {
                 currentLineIndex = forLoopHandler.handleForLoop(lines, currentLineIndex, variables, this);
             } else if (line.startsWith("while")) {
-                currentLineIndex = whileLoopHandler.handleWhileLoop(lines, currentLineIndex, variables, this);
+                currentLineIndex = whileLoopHandler.HandleWhileLoop(lines, currentLineIndex, variables, this);
             } else if (line.contains("print")) {
                 handlePrint(line);
             }
