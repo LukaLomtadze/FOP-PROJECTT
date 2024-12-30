@@ -11,7 +11,7 @@ The project is currently under development and work is ongoing across multiple b
 
 ## Contributors
 This project is a collaborative effort by a dedicated team of developers:
-- **Luka Lomtadze**: main Branch development
+- **Luka Lomtadze**: main, Working1 Branch development
 - **Demetre Khachapuridze**: DemetreBranch development
 - **Luka Vasadze**: LukaVasadzeBranch Development
 - **Nikolozi Berishvili**: NikoBranch Development
