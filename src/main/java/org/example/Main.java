@@ -17,6 +17,11 @@ public class Main {
                     print(z)
                 else:
                     print(y)
+                    
+                    
+                for i in range(1, z):
+                    x = x + 1
+                    print(x)
                 """;
 
         evaluating.eval(code);//7
