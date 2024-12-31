@@ -51,38 +51,50 @@ public class Evaluating {
     public int evaluateExpression(String expression) {
         expression = expression.trim();
 
+        // Directly return if it's a numeric literal
         if (expression.matches("\\d+")) {
             return Integer.parseInt(expression);
         }
 
-
+        // Directly return if it's a single variable
         if (expression.matches("[a-zA-Z]+")) {
             return variables.getOrDefault(expression, 0);
         }
 
-
+        // Handle comparison operators like == and !=
         if (expression.contains(">") || expression.contains("<") || expression.contains("==") || expression.contains("!=")) {
             return evaluateComparisonExpression(expression);
         }
 
+        // Handle logical expressions like && and ||
+        if (expression.contains("and") || expression.contains("or")) {
+            return evaluateLogicalExpression(expression);
+        }
 
+        // Arithmetic operations (+, -, *, /)
         Stack<Integer> values = new Stack<>();
         Stack<Character> operators = new Stack<>();
-        String[] tokens = expression.split("(?<=\\d)(?=[+-/*])|(?<=[+-/*])(?=\\d)|\\s+");
+        String[] tokens = expression.split("(?<=[-+*/()%])|(?=[-+*/()%])|\\s+");
 
         for (String token : tokens) {
             token = token.trim();
+            if (token.isEmpty()) {
+                continue; // Skip empty tokens
+            }
             if (token.matches("\\d+")) {
                 values.push(Integer.parseInt(token));
             } else if (token.matches("[a-zA-Z]+")) {
                 values.push(variables.getOrDefault(token, 0));
-            } else if ("+-/*".contains(token)) {
+            } else if ("+-*/%".contains(token)) {
                 while (!operators.isEmpty() && precedence(operators.peek()) >= precedence(token.charAt(0))) {
                     values.push(applyOperator(operators.pop(), values.pop(), values.pop()));
                 }
                 operators.push(token.charAt(0));
+            } else {
+                throw new IllegalArgumentException("Invalid token: " + token);
             }
         }
+
 
         while (!operators.isEmpty()) {
             values.push(applyOperator(operators.pop(), values.pop(), values.pop()));
@@ -91,33 +103,54 @@ public class Evaluating {
     }
 
 
+
     private int evaluateComparisonExpression(String expression) {
-        String[] parts = expression.split("\\s+");
-        if (parts.length != 3) {
-            throw new IllegalArgumentException("Invalid comparison expression: " + expression);
+        String[] operators = {"==", "!=", ">", "<"};
+        for (String operator : operators) {
+            int operatorIndex = expression.indexOf(operator);
+            if (operatorIndex != -1) {
+                String left = expression.substring(0, operatorIndex).trim();
+                String right = expression.substring(operatorIndex + operator.length()).trim();
+
+                int leftValue = evaluateExpression(left);
+                int rightValue = evaluateExpression(right);
+
+                return switch (operator) {
+                    case "==" -> leftValue == rightValue ? 1 : 0;
+                    case "!=" -> leftValue != rightValue ? 1 : 0;
+                    case ">" -> leftValue > rightValue ? 1 : 0;
+                    case "<" -> leftValue < rightValue ? 1 : 0;
+                    default -> throw new IllegalArgumentException("Unknown operator: " + operator);
+                };
+            }
         }
-
-        int left = evaluateExpression(parts[0]);
-        int right = evaluateExpression(parts[2]);
-        String operator = parts[1];
-
-
-        switch (operator) {
-            case ">":
-                return left > right ? 1 : 0;
-            case "<":
-                return left < right ? 1 : 0;
-            case "==":
-                return left == right ? 1 : 0;
-            case "!=":
-                return left != right ? 1 : 0;
-            default:
-                throw new IllegalArgumentException("Unknown comparison operator: " + operator);
-        }
+        throw new IllegalArgumentException("Invalid comparison expression: " + expression);
     }
 
 
 
+    private int evaluateLogicalExpression(String expression) {
+        // Handle logical AND (&&) and OR (||)
+        if (expression.contains("and")) {
+            String[] parts = expression.split("and");
+            for (String part : parts) {
+                if (evaluateExpression(part.trim()) == 0) {
+                    return 0;
+                }
+            }
+            return 1;
+        } else if (expression.contains("or")) {
+            String[] parts = expression.split("\\|\\|");
+            for (String part : parts) {
+                if (evaluateExpression(part.trim()) != 0) {
+                    return 1;
+                }
+            }
+            return 0;
+        } else {
+            throw new IllegalArgumentException("Invalid logical expression: " + expression);
+        }
+    }
 
 
     private int precedence(char operator) {
@@ -141,7 +174,22 @@ public class Evaluating {
 
 
     public void handlePrint(String line) {
-        String varName = line.substring(line.indexOf("(") + 1, line.indexOf(")")).trim();
-        System.out.println(variables.getOrDefault(varName, 0));
+        try {
+            int startIndex = line.indexOf("(") + 1;
+            int endIndex = line.lastIndexOf(")");
+            if (startIndex > 0 && endIndex > startIndex) {
+                String varName = line.substring(startIndex, endIndex).trim();
+                if (variables.containsKey(varName)) {
+                    System.out.println(variables.get(varName));
+                } else {
+                    System.out.println("Undefined variable: " + varName);
+                }
+            } else {
+                throw new IllegalArgumentException("Invalid print statement: " + line);
+            }
+        } catch (StringIndexOutOfBoundsException e) {
+            System.err.println("Error in handlePrint: Invalid format in line: " + line);
+        }
     }
+
 }

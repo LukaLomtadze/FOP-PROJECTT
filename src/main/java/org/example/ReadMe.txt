@@ -46,13 +46,23 @@ For Loops: Runs loops in the format for <var> in range(<start>, <end>).
 
 For the algorthms U can try following
 
-1. Sum Digits
+1. Sum of N th numbers
 
 N = 10
 sum = 0
 
 for i in range(1, N):
     sum = sum + i
+
+print(sum) // 55
+
+N = 11
+sum = 0
+i = 1
+
+while i < N:
+    sum = sum + i
+    i = i + 1
 
 print(sum) // 55
 
@@ -86,3 +96,64 @@ while x > 1:
     x = x - 1
 print(y) // 120
 
+
+4. multiplication table
+
+N = 5
+i = 1
+t = 1
+while i <= 10:
+    t = N * i
+    print(t)
+    i =i+ 1
+
+5. sum digits
+
+num = 1234
+sum = 0
+
+while num > 0:
+    digit = num % 10
+    sum = sum + digit
+    num = num / 10
+
+print(sum)
+
+6. largest digits
+
+num = 3947
+largest = 0
+
+while num > 0:
+    digit = num % 10
+    if largest < digit:
+        largest = digit
+    num = num / 10
+
+(largest)  # Output: 9
+
+
+7. reverseing number
+
+num = 1234
+reversed = 0
+
+while num > 0:
+    digit = num % 10
+    reversed = reversed * 10 + digit
+    num = num / 10
+
+print(reversed)
+
+
+8.GCD of numbers
+
+a = 48
+b = 18
+
+while b > 0:
+    temp = b
+    b = a % b
+    a = temp
+
+print(a)

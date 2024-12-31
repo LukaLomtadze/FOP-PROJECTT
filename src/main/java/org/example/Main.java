@@ -8,22 +8,18 @@ public class Main {
         Evaluating evaluating = new Evaluating();
 
         String code = """
-                x = 5
-                y=6
-                z = 7
-                if x > 8:
-                    print(x)
-                elif x < y:
-                    print(z)
-                else:
-                    print(y)
-                    
-                    
-                for i in range(1, z):
-                    x = x + 1
-                    print(x)
+                a = 36
+                b = 12
+                
+                while b > 0:
+                    temp = b
+                    b = a % b
+                    a = temp
+                
+                print(a)
+                
                 """;
 
-        evaluating.eval(code);//7
+        evaluating.eval(code);
     }
 }
